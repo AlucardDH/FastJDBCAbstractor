@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.dh.fastjdbcabstractor.converter;
 
 
@@ -19,12 +14,11 @@ import java.util.Date;
 import java.util.List;
 
 /**
- *
- * @author frup58637
+ * This class is used to convert fields of a ResultSet to a java Object
+ * 
+ * @author AlucardDH
  */
 public class ConverterManager extends DualKeyHashMap<Integer,Class,TypeConverter>{
-    
-    
     
     private static final int INSTANCE_DEFAULT = 0;
     
@@ -102,6 +96,10 @@ public class ConverterManager extends DualKeyHashMap<Integer,Class,TypeConverter
     
     private static ConverterManager instance;
 
+    /**
+     * Initialize converter manager with all sqlTypes to standard java classes
+     * @return a default instance with basic converters
+     */
     public static ConverterManager getDefaultInstance() {
         if(instance==null || instanceType != INSTANCE_DEFAULT) {
             instance = new ConverterManager();
@@ -145,6 +143,15 @@ public class ConverterManager extends DualKeyHashMap<Integer,Class,TypeConverter
         return instance;
     }
     
+    /**
+     * 
+     * @param resultSet ResultSet to convert
+     * @param column column of the ResultSet to convert
+     * @param targetClass target class of the column
+     * @return value of the column converted to specified class
+     * @throws MissingConverterException when there is no converter from the colmun type to the target class
+     * @throws SQLException
+     */
     public Object convert(ResultSet resultSet, int column, Class targetClass) throws MissingConverterException, SQLException {
         int sqlType = resultSet.getMetaData().getColumnType(column);
         
@@ -156,6 +163,11 @@ public class ConverterManager extends DualKeyHashMap<Integer,Class,TypeConverter
         return currentConverter.convert(resultSet,column);
     } 
     
+    /**
+     * Usefull method to get static variables of a class in a list
+     * @param c class with integer static fields
+     * @return list of all the class integer field values
+     */
     private static List<Integer> getStaticInts(Class<?> c) {
         List<Integer> list  = new ArrayList<Integer>();
         Field[] fields = c.getDeclaredFields();

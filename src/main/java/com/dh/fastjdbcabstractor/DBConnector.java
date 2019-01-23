@@ -1,8 +1,5 @@
 package com.dh.fastjdbcabstractor;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.Driver;
@@ -12,8 +9,9 @@ import java.util.Enumeration;
 import java.util.Properties;
 
 /**
- *
- * @author dhembert
+ * Useful class to open jdbc connections
+ * 
+ * @author AlucardDH
  */
 public class DBConnector {
 

@@ -1,17 +1,20 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.dh.fastjdbcabstractor.converter;
 
 /**
- *
- * @author frup58637
+ * Exception thrown when the converter sqlType to javaClass is missing
+ * 
+ * @author AlucardDH
  */
 public class MissingConverterException extends Exception {
     
+    /**
+     * Source sql type (from @See java.sql.Types
+     */
     private final int sqlType;
+    
+    /**
+     * Target java class
+     */
     private final Class targetClass;
 
     public MissingConverterException(int sqlType,Class targetClass) {
@@ -20,10 +23,16 @@ public class MissingConverterException extends Exception {
         this.targetClass = targetClass;
     }
 
+    /**
+     * @return Source sql type (from @See java.sql.Types
+     */
     public int getSqlType() {
         return sqlType;
     }
 
+    /**
+     * @return Target java class
+     */
     public Class getTargetClass() {
         return targetClass;
     }

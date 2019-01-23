@@ -8,8 +8,9 @@ package com.dh.fastjdbcabstractor.utils;
 import java.util.Objects;
 
 /**
- *
- * @author frup58637
+ * Composite key for the @see com.dh.fastjdbcabstractor.utils.DualKeyHashMap
+ * 
+ * @author AlucardDH
  */
 public class ComposedKey<K1, K2> {
 

@@ -16,16 +16,50 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
- *
- * @author frup58637
+ * This class expose simplified method to execute sql queries and map the result to a pojo entity
+ * 
+ * @author AlucardDH
  */
 public class FastJDBCAbstractor {
     
 
-    public static <T> List<T>query(Class<T> clazz,Connection connection, String sqlQuery) throws SQLException, InstantiationException, IllegalAccessException, IllegalArgumentException, MissingConverterException {
+    /**
+     * Execute SQL queries without parameters
+     * 
+     * @param <T> Target class for the result entities
+     * @param clazz Target class for the result entities
+     * @param connection Connection used to query the DB
+     * @param sqlQuery SQL query to execute
+     * 
+     * @return a List of entities
+     * 
+     * @throws SQLException
+     * @throws InstantiationException
+     * @throws IllegalAccessException
+     * @throws IllegalArgumentException
+     * @throws MissingConverterException 
+     */
+    public static <T> List<T>query(Class<T> clazz,Connection connection, String sqlQuery) throws SQLException, InstantiationException, IllegalAccessException, MissingConverterException {
         return query(clazz, connection, sqlQuery, null);
     }
     
+    /**
+     * Execute SQL queries without parameters
+     * 
+     * @param <T> Target class for the result entities
+     * @param clazz Target class for the result entities
+     * @param connection Connection used to query the DB
+     * @param sqlQuery Parametrized SQL query to execute
+     * @param parametersSetter Parameters to set in the query 
+     * 
+     * @return a List of entities
+     * 
+     * @throws SQLException
+     * @throws InstantiationException
+     * @throws IllegalAccessException
+     * @throws IllegalArgumentException
+     * @throws MissingConverterException 
+     */
     public static <T> List<T>query(Class<T> clazz, Connection connection, String sqlQuery,ParametersSetter parametersSetter) throws SQLException, InstantiationException, IllegalAccessException, IllegalArgumentException, MissingConverterException {
         ArrayList<T> result = new ArrayList<>();
         EntityFactory<T> entityFactory = new EntityFactory<>(clazz);
@@ -54,6 +88,10 @@ public class FastJDBCAbstractor {
         return result;
     }
     
+    /**
+     * Use this interface to set values in a parametrized sql query.
+     * It will be executed after the statement is created and before the query is executed.
+     */
     public interface ParametersSetter {
         public void setParameter(PreparedStatement ps) throws SQLException;
     }

@@ -14,14 +14,22 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- *
- * @author frup58637
+ * Class used to build entities from a ResultSet
+ * 
+ * Each column of the ResultSet is mapped with a field of the Entity using its name
+ * 
+ * @author AlucardDH
+ * @param <T> Entities class
  */
 public class EntityFactory<T> {
     
     private final Class<T> clazz;
     private final HashMap<String,Field> fields = new HashMap<>();
 
+    /**
+     * 
+     * @param clazz Entities class
+     */
     public EntityFactory(Class<T> clazz) {
         this.clazz = clazz;
         Field[] fs = clazz.getFields();
@@ -34,14 +42,22 @@ public class EntityFactory<T> {
         return (T) clazz.newInstance();
     }
     
-    public void fill(T entity, ResultSet row, Map<String,Integer> columnMapping) throws IllegalArgumentException, IllegalAccessException, MissingConverterException, SQLException {
+    /**
+     * 
+     * @param entity
+     * @param row
+     * @param columnMapping
+     * @throws MissingConverterException when there is no converter from the colmun type to the target class
+     * @throws SQLException 
+     */
+    public void fill(T entity, ResultSet row, Map<String,Integer> columnMapping) throws MissingConverterException, SQLException {
         for(Field f : fields.values()) {
             Integer column = columnMapping.get(f.getName());
             if(column!=null) {
                 try {
                     f.set(entity, ConverterManager.getDefaultInstance().convert(row, column, f.getType()));
                 } catch(IllegalAccessException iae) {
-                    
+                    // field is not public! > ignored
                 }
             }
         }
