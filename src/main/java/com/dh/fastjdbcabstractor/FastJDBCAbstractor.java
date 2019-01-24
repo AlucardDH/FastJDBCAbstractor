@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.dh.fastjdbcabstractor;
 
 import com.dh.fastjdbcabstractor.converter.MissingConverterException;
@@ -39,8 +34,8 @@ public class FastJDBCAbstractor {
      * @throws IllegalArgumentException
      * @throws MissingConverterException 
      */
-    public static <T> List<T>query(Class<T> clazz,Connection connection, String sqlQuery) throws SQLException, InstantiationException, IllegalAccessException, MissingConverterException {
-        return query(clazz, connection, sqlQuery, null);
+    public static <T> List<T>executeQuery(Class<T> clazz,Connection connection, String sqlQuery) throws SQLException, InstantiationException, IllegalAccessException, MissingConverterException {
+        return executeQuery(clazz, connection, sqlQuery, null);
     }
     
     /**
@@ -60,7 +55,7 @@ public class FastJDBCAbstractor {
      * @throws IllegalArgumentException
      * @throws MissingConverterException 
      */
-    public static <T> List<T>query(Class<T> clazz, Connection connection, String sqlQuery,ParametersSetter parametersSetter) throws SQLException, InstantiationException, IllegalAccessException, IllegalArgumentException, MissingConverterException {
+    public static <T> List<T>executeQuery(Class<T> clazz, Connection connection, String sqlQuery,ParametersSetter parametersSetter) throws SQLException, InstantiationException, IllegalAccessException, IllegalArgumentException, MissingConverterException {
         ArrayList<T> result = new ArrayList<>();
         EntityFactory<T> entityFactory = new EntityFactory<>(clazz);
         
@@ -69,7 +64,6 @@ public class FastJDBCAbstractor {
             if(parametersSetter!=null) {
                 parametersSetter.setParameter(ps);
             }
-            
             try(ResultSet rs = ps.executeQuery()) {
                 ResultSetMetaData metadata = rs.getMetaData();
                 HashMap<String,Integer> columnMapping = new HashMap<>();
@@ -86,6 +80,21 @@ public class FastJDBCAbstractor {
         }
         
         return result;
+    }
+    
+    public static int executeUpdate(Connection connection, String sqlQuery) throws SQLException {
+        return executeUpdate(connection, sqlQuery, null);
+    }
+    
+    public static int executeUpdate(Connection connection, String sqlQuery, ParametersSetter parametersSetter) throws SQLException {
+        try(PreparedStatement ps = connection.prepareStatement(sqlQuery)) {
+            
+            if(parametersSetter!=null) {
+                parametersSetter.setParameter(ps);
+            }
+            
+            return ps.executeUpdate();
+        }
     }
     
     /**
