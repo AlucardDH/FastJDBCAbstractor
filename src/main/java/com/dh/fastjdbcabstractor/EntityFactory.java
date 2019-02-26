@@ -23,23 +23,40 @@ import java.util.Map;
  */
 public class EntityFactory<T> {
     
+    private final String parentField;
     private final Class<T> clazz;
     private final HashMap<String,Field> fields = new HashMap<>();
+    private final HashMap<Field,EntityFactory<?>> subEntityFactories = new HashMap<>();
 
     /**
      * 
      * @param clazz Entities class
      */
     public EntityFactory(Class<T> clazz) {
+        this(null,clazz);
+    }
+
+    public EntityFactory(String parentField, Class<T> clazz) {
+        this.parentField = parentField;
         this.clazz = clazz;
         Field[] fs = clazz.getFields();
+        String tempParent = parentField==null ? "" : parentField+"_";
         for(Field f : fs) {
-            fields.put(f.getName(),f);
+            fields.put(tempParent+f.getName(),f);
         }
     }
     
     public T newEntity() throws InstantiationException, IllegalAccessException {
         return (T) clazz.newInstance();
+    }
+    
+    public EntityFactory<?> getSubEntityFactory(Field field) {
+        EntityFactory<?> result = subEntityFactories.get(field);
+        if(result==null) {
+            result = new EntityFactory<>((parentField==null ? "" : parentField+"_")+field.getName(),field.getType());
+            subEntityFactories.put(field, result);
+        }
+        return result;
     }
     
     /**
@@ -49,15 +66,26 @@ public class EntityFactory<T> {
      * @param columnMapping
      * @throws MissingConverterException when there is no converter from the colmun type to the target class
      * @throws SQLException 
+     * @throws java.lang.IllegalAccessException 
+     * @throws java.lang.InstantiationException 
      */
-    public void fill(T entity, ResultSet row, Map<String,Integer> columnMapping) throws MissingConverterException, SQLException {
-        for(Field f : fields.values()) {
-            Integer column = columnMapping.get(f.getName());
-            if(column!=null) {
+    public void fill(T entity, ResultSet row, Map<String,Integer> columnMapping) throws MissingConverterException, SQLException, IllegalArgumentException, IllegalAccessException, InstantiationException {
+        for(Map.Entry<String,Integer> column : columnMapping.entrySet()) {
+            Field f = fields.get(column.getKey());
+            if(f!=null) {
                 try {
-                    f.set(entity, ConverterManager.getDefaultInstance().convert(row, column, f.getType()));
+                    f.set(entity, ConverterManager.getDefaultInstance().convert(row, column.getValue(), f.getType()));
                 } catch(IllegalAccessException iae) {
                     // field is not public! > ignored
+                }
+            } else {
+                for(Map.Entry<String,Field> field : fields.entrySet()) {
+                    if(column.getKey().startsWith(field.getKey()) && field.getValue().get(entity)==null) {
+                        EntityFactory ef = getSubEntityFactory(field.getValue());
+                        Object o = ef.newEntity();
+                        ef.fill(o, row, columnMapping);
+                        field.getValue().set(entity, o);
+                    }
                 }
             }
         }

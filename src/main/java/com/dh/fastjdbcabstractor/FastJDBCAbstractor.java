@@ -17,6 +17,17 @@ import java.util.List;
  */
 public class FastJDBCAbstractor {
     
+    private static final HashMap<Class<?>,EntityFactory<?>> ENTITY_FACTORIES = new HashMap<>();
+    
+    public static <T> EntityFactory<T> getEntityFactory(Class<T> clazz) {
+        EntityFactory<T> result = (EntityFactory<T>) ENTITY_FACTORIES.get(clazz);
+        if(result==null) {
+            result = new EntityFactory<>(clazz);
+            ENTITY_FACTORIES.put(clazz, result);
+        }
+        return result;
+    }
+    
 
     /**
      * Execute SQL queries without parameters
@@ -57,7 +68,9 @@ public class FastJDBCAbstractor {
      */
     public static <T> List<T>executeQuery(Class<T> clazz, Connection connection, String sqlQuery,ParametersSetter parametersSetter) throws SQLException, InstantiationException, IllegalAccessException, IllegalArgumentException, MissingConverterException {
         ArrayList<T> result = new ArrayList<>();
-        EntityFactory<T> entityFactory = new EntityFactory<>(clazz);
+        EntityFactory<T> entityFactory = getEntityFactory(clazz);
+        
+        System.out.println(sqlQuery);
         
         try(PreparedStatement ps = connection.prepareStatement(sqlQuery)) {
             
@@ -68,7 +81,7 @@ public class FastJDBCAbstractor {
                 ResultSetMetaData metadata = rs.getMetaData();
                 HashMap<String,Integer> columnMapping = new HashMap<>();
                 for(int column=1;column<=metadata.getColumnCount();column++) {
-                    columnMapping.put(metadata.getColumnName(column), column);
+                    columnMapping.put(metadata.getColumnLabel(column), column);
                     //System.out.println(column+" : "+metadata.getColumnName(column));
                 }
                 while(rs.next()) {

@@ -2,7 +2,7 @@ package com.dh.fastjdbcabstractor.querybuilder;
 
 import com.dh.fastjdbcabstractor.utils.Concat;
 import java.lang.reflect.Field;
-import java.util.LinkedList;
+import java.util.LinkedHashSet;
 
 /**
  *
@@ -10,8 +10,7 @@ import java.util.LinkedList;
  */
 public class Select extends Query {
     
-    private final LinkedList<String> fields = new LinkedList<>();
-    private Class<?> clazz;
+    private final LinkedHashSet<String> fields = new LinkedHashSet<>();
 
     public Select() {
     }
@@ -32,10 +31,16 @@ public class Select extends Query {
     }
     
     public Select select(Class<?> clazz) {
-        this.clazz = clazz;
-        fields.clear();
         for(Field f : clazz.getFields()) {
             fields.add(f.getName());
+        }
+        return this;
+    }
+    
+    public Select select(String field,Class<?> clazz) {
+        fields.remove(field);
+        for(Field f : clazz.getFields()) {
+            fields.add(field+"_"+f.getName());
         }
         return this;
     }

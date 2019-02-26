@@ -40,6 +40,12 @@ public class SelectTest {
     private class TestClass {
         public String foo;
         public Integer bar;
+        public TestSubClass sub;
+    }
+    
+    private class TestSubClass {
+        public String subfoo;
+        public String subbar;
     }
 
     /**
@@ -49,12 +55,10 @@ public class SelectTest {
     public void testSelect_Class() {
         System.out.println("select(class)");
         
-        Class clazz = TestClass.class;
-        Select instance = new Select();
-        String expResult = "SELECT foo,bar";
-        Select result = instance.select(clazz);
+        Select instance = new Select(TestClass.class).select("sub",TestSubClass.class);
         
-        assertEquals(expResult, result.toString());
+        String expResult = "SELECT foo,bar,sub_subfoo,sub_subbar";
+        assertEquals(expResult, instance.toString());
     }
     
 }
