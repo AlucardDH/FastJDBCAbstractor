@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.dh</groupId>
     <artifactId>FastJDBCAbstractor</artifactId>
-    <version>0.3</version>
+    <version>0.3.1</version>
     <packaging>jar</packaging>
     
     <properties>
@@ -13,6 +13,13 @@
     </properties>
     
     <dependencies>
+        <!-- https://mvnrepository.com/artifact/commons-lang/commons-lang -->
+        <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+            <version>2.6</version>
+        </dependency>
+
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>

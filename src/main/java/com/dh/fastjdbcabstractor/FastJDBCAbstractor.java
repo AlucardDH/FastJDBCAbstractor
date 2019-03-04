@@ -1,6 +1,7 @@
 package com.dh.fastjdbcabstractor;
 
 import com.dh.fastjdbcabstractor.converter.MissingConverterException;
+import com.dh.fastjdbcabstractor.querybuilder.Insert;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -108,6 +109,13 @@ public class FastJDBCAbstractor {
             
             return ps.executeUpdate();
         }
+    }
+    
+    public static int insertWIthValues(Connection connection, Insert insert) throws SQLException {
+        if(insert==null || !insert.hasValues()) {
+            throw new IllegalArgumentException("Insert is null or has no value");
+        }
+        return executeUpdate(connection, insert.build());
     }
     
     /**
