@@ -120,6 +120,7 @@ public class ConverterManager extends DualKeyHashMap<Integer,Class,TypeConverter
             // Numbers
             instance.put(Types.BIGINT,Long.class, CONVERTER_LONG);
             instance.put(Types.BIT,Integer.class, CONVERTER_INTEGER);
+            instance.put(Types.BIT,Boolean.class, CONVERTER_BOOLEAN);
             instance.put(Types.BOOLEAN,Boolean.class, CONVERTER_BOOLEAN);
             instance.put(Types.DECIMAL,Float.class, CONVERTER_FLOAT);
             instance.put(Types.DOUBLE,Double.class, CONVERTER_DOUBLE);

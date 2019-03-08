@@ -8,6 +8,7 @@ package com.dh.fastjdbcabstractor;
 import com.dh.fastjdbcabstractor.converter.ConverterManager;
 import com.dh.fastjdbcabstractor.converter.MissingConverterException;
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -42,12 +43,14 @@ public class EntityFactory<T> {
         Field[] fs = clazz.getFields();
         String tempParent = parentField==null ? "" : parentField+"_";
         for(Field f : fs) {
-            fields.put(tempParent+f.getName(),f);
+            if(!Modifier.isStatic(f.getModifiers())) {
+                fields.put(tempParent + f.getName(), f);
+            }
         }
     }
     
     public T newEntity() throws InstantiationException, IllegalAccessException {
-        return (T) clazz.newInstance();
+        return clazz.newInstance();
     }
     
     public EntityFactory<?> getSubEntityFactory(Field field) {

@@ -2,6 +2,7 @@ package com.dh.fastjdbcabstractor.querybuilder;
 
 import com.dh.fastjdbcabstractor.utils.Concat;
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.LinkedHashSet;
 
 /**
@@ -32,7 +33,9 @@ public class Select extends Query {
     
     public Select select(Class<?> clazz) {
         for(Field f : clazz.getFields()) {
-            fields.add(f.getName());
+            if(!Modifier.isStatic(f.getModifiers())) {
+                fields.add(f.getName());
+            }
         }
         return this;
     }
@@ -40,7 +43,9 @@ public class Select extends Query {
     public Select select(String field,Class<?> clazz) {
         fields.remove(field);
         for(Field f : clazz.getFields()) {
-            fields.add(field+"_"+f.getName());
+            if(!Modifier.isStatic(f.getModifiers())) {
+                fields.add(field + "_" + f.getName());
+            }
         }
         return this;
     }

@@ -2,6 +2,7 @@ package com.dh.fastjdbcabstractor.querybuilder;
 
 import com.dh.fastjdbcabstractor.utils.Concat;
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -32,8 +33,10 @@ public class Insert extends Query {
         
         Field[] fs = clazz.getFields();
         for(Field f : fs) {
-            fields.put(f.getName(),f);
-            placeholders.add("?");
+            if(!Modifier.isStatic(f.getModifiers())) {
+                fields.put(f.getName(), f);
+                placeholders.add("?");
+            }
         }
     }
     
